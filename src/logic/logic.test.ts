@@ -5,6 +5,7 @@ import { applyDakuten, applyHandakuten, applySmall, backspace } from './kana';
 import { isWrittenCorrect, normalizeAnswer, toKatakana } from './normalize';
 import { seededRng } from './random';
 import { questionPools } from '../data';
+import { ratioLabel } from '../components/FlagViewer';
 
 describe('normalizeAnswer', () => {
   it('ひらがなをカタカナにそろえる', () => {
@@ -112,6 +113,17 @@ describe('採点', () => {
     expect(r.score).toBe(1);
     expect(r.answers[1]).toEqual({ questionId: 'w', value: null, correct: false });
     expect(r.passed).toBe(false);
+  });
+});
+
+describe('国旗の縦横比の表示', () => {
+  it('きりのよい比は「縦：横」で、そうでなければ「約○倍」で表す', () => {
+    expect(ratioLabel(1.5)).toBe('縦：横 = 2：3');
+    expect(ratioLabel(1.25)).toBe('縦：横 = 4：5');
+    expect(ratioLabel(1)).toBe('縦：横 = 1：1');
+    expect(ratioLabel(2.545)).toBe('縦：横 = 11：28');
+    expect(ratioLabel(1.772)).toBe('横の長さは縦の約1.77倍');
+    expect(ratioLabel(0.82)).toBe('四角くない形');
   });
 });
 

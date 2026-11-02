@@ -19,6 +19,8 @@ export interface Country {
   plant?: string;
   item?: string;
   stars?: number;
+  /** 国旗の縦横比（横÷縦）。scripts/flag-aspects.mjs で画像から作る */
+  aspect: number;
 }
 
 export interface Choice {

@@ -25,9 +25,6 @@ const shuffle = (arr) => {
   return a;
 };
 
-// 4:3の画像では見分けがつかない組み合わせ（インドネシアとモナコは縦横比しかちがわない）
-const LOOKALIKE = [['ID', 'MC']];
-const lookalike = (a, b) => LOOKALIKE.some(([x, y]) => (a === x && b === y) || (a === y && b === x));
 
 const COLOR_NAMES = {
   red: '赤', white: '白', blue: '青', yellow: '黄色', green: '緑', black: '黒', orange: 'オレンジ', maroon: 'えんじ色',
@@ -42,7 +39,7 @@ const hideName = (c, text) => text.split(c.name).join('〇〇');
 // ダミーの国をえらぶ。hard=似た国旗→同じ地域→その他、easy=ちがう地域から
 function pickDistractors(c, n, { hard, exclude = () => false }) {
   const ok = (d, chosen) =>
-    d.id !== c.id && !lookalike(d.id, c.id) && !exclude(d) && !chosen.some((x) => x.id === d.id || lookalike(x.id, d.id));
+    d.id !== c.id && !exclude(d) && !chosen.some((x) => x.id === d.id);
   const tiers = hard
     ? [
         shuffle(c.similar.map((id) => byId.get(id))),

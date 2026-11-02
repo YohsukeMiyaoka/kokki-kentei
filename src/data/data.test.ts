@@ -3,7 +3,16 @@ import { countries, countryById, questionPools } from '.';
 import { EXAM_SPECS } from '../logic/exam';
 import { normalizeAnswer } from '../logic/normalize';
 
-const flagFiles = import.meta.glob('/node_modules/flag-icons/flags/4x3/*.svg');
+// 国旗の画像（src/components/Flag.tsx と同じ場所。差しかえ用の画像を優先する）
+const flagSvgs = import.meta.glob<string>('/node_modules/svg-country-flags/svg/*.svg', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+const overrideSvgs = import.meta.glob<string>('/src/assets/flags/*.svg', { eager: true, query: '?raw', import: 'default' });
+const flagSvg = (id: string) =>
+  overrideSvgs[`/src/assets/flags/${id.toLowerCase()}.svg`] ??
+  flagSvgs[`/node_modules/svg-country-flags/svg/${id.toLowerCase()}.svg`];
 
 describe('countries.json', () => {
   it('198の国・地域がある', () => {
@@ -13,10 +22,26 @@ describe('countries.json', () => {
   it('バチカン・コソボ・クック諸島・ニウエ・台湾をふくむ', () => {
     for (const id of ['VA', 'XK', 'CK', 'NU', 'TW']) expect(countryById.has(id)).toBe(true);
   });
-  it('すべての国に国旗画像がある', () => {
+  it('すべての国に国旗画像があり、縦横比（aspect）が画像と合っている', () => {
     for (const c of countries) {
-      expect(flagFiles[`/node_modules/flag-icons/flags/4x3/${c.id.toLowerCase()}.svg`], c.id).toBeDefined();
+      const svg = flagSvg(c.id);
+      expect(svg, c.id).toBeDefined();
+      const [, , w, h] = svg.match(/viewBox="([^"]+)"/)![1].trim().split(/[\s,]+/).map(Number);
+      expect(c.aspect, c.id).toBeCloseTo(w / h, 2);
     }
+  });
+  it('国旗の形がしっかり再現されている（縦横比で見分ける国旗）', () => {
+    const aspect = (id: string) => countryById.get(id)!.aspect;
+    expect(aspect('ID')).toBeCloseTo(3 / 2); // インドネシア 2:3
+    expect(aspect('MC')).toBeCloseTo(5 / 4); // モナコ 4:5
+    expect(aspect('CH')).toBe(1); // スイスは正方形
+    expect(aspect('VA')).toBe(1); // バチカンも正方形
+    expect(aspect('QA')).toBeCloseTo(28 / 11, 2); // カタールはとても横長
+    expect(aspect('NP')).toBeLessThan(1); // ネパールは縦長（四角くない）
+  });
+  it('シリア・キルギスは今の国旗に差しかえている', () => {
+    expect(flagSvg('SY')).toContain('#007a3d'); // 2025年からの国旗は上が緑
+    expect(overrideSvgs['/src/assets/flags/kg.svg']).toBeDefined();
   });
   it('必要な項目がそろっていて、似ている国旗のIDが実在する', () => {
     for (const c of countries) {

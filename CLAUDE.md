@@ -57,7 +57,10 @@ iPadのSafariで「ホーム画面に追加」して、アプリのように全�
 
 - Vite + React + TypeScript
 - PWA：`vite-plugin-pwa`（Service Workerで国旗画像まで含めてすべてキャッシュし、オフラインで動かす）
-- 国旗画像：`flag-icons`（MITライセンスのSVG）をバンドルし、外部CDNは使わない。台湾・コソボ・クック諸島・ニウエも含まれているか確認する。
+- 国旗画像：**本物の縦横比**で描かれた `svg-country-flags`（パブリックドメインのSVG）をバンドルし、外部CDNは使わない。インドネシア（2:3）とモナコ（4:5）のように縦横比で見分ける国旗があるので、国旗はすべて本物の形で表示する（4:3などにそろえない）。
+  - このライブラリは2021年で更新が止まっているため、その後に変わった国旗（シリア2025年・キルギス2023年）は `src/assets/flags/` の画像で差しかえる（`scripts/make-flag-overrides.mjs` で flag-icons（MIT）の絵から作る）。国旗が変わった国が出たら、ここに足す。
+  - 縦横比は `countries.json` の `aspect`（横÷縦）に入れる（`node scripts/flag-aspects.mjs` で画像から作る）。画面では高さ（CSSの `--flag-h`）と `aspect` から幅を決める。
+- ふり返りの国旗はタップで拡大表示できる（2本指で拡大・1本指で移動・ダブルタップ）。
 - 保存：端末内だけ（`localStorage`。データが増えたらIndexedDBに切り替える）。サーバー・ログイン・外部への送信はなし。
 - ホスティング：GitHub Pages（https://yohsukemiyaoka.github.io/kokki-kentei/）。`main` にpushすると GitHub Actions（`.github/workflows/deploy.yml`）がテスト→ビルド→公開まで行う。テストが落ちたら公開されない。
 

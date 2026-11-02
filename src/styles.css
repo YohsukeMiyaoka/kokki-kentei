@@ -75,7 +75,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 /* ---- ユーザー選択 ---- */
 .hero { text-align: center; }
 .hero-flags { display: flex; justify-content: center; gap: 10px; margin-top: 12px; }
-.hero-flag { width: 64px; border-radius: 6px; box-shadow: 0 2px 6px #0002; animation: wave 2.4s ease-in-out infinite; }
+.hero-flag { --flag-h: 44px; animation: wave 2.4s ease-in-out infinite; }
 .hero-flag:nth-child(2n) { animation-delay: 0.4s; }
 @keyframes wave { 50% { transform: translateY(-6px) rotate(-3deg); } }
 .user-list { display: flex; flex-direction: column; gap: 12px; align-items: center; }
@@ -134,15 +134,11 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   margin: 0;
   line-height: 1.5;
 }
-.flag { display: block; aspect-ratio: 4 / 3; object-fit: contain; }
-.q-flag {
-  height: min(32vh, 260px);
-  width: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 14px #0003;
-  background: #fff;
-}
-.q-flag.small { height: min(22vh, 180px); }
+/* 国旗は本物の縦横比で出す。--flag-h（高さ）× --ar（横÷縦）で幅を決め、枠より広ければ枠に合わせる。
+   影はネパールのような四角くない国旗にも合うよう drop-shadow にする */
+.flag { display: block; width: min(100%, calc(var(--flag-h, 60px) * var(--ar, 1.5))); height: auto; filter: drop-shadow(0 1px 3px #0004); }
+.q-flag { --flag-h: min(32vh, 260px); filter: drop-shadow(0 4px 10px #0003); }
+.q-flag.small { --flag-h: min(22vh, 180px); }
 
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: min(900px, 100%); }
 .choice {
@@ -160,7 +156,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   justify-content: center;
 }
 .choice:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 var(--line); }
-.flag-choices .choice .flag { height: min(19vh, 170px); width: auto; border-radius: 4px; box-shadow: 0 1px 4px #0003; }
+.flag-choices .choice .flag { --flag-h: min(19vh, 170px); }
 .choice.is-correct { border-color: var(--ok); background: #e3f8ee; animation: pop 0.4s; }
 .choice.is-wrong { border-color: var(--ng); background: #fde8eb; }
 .choice.is-dim { opacity: 0.45; }
@@ -272,7 +268,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .review-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 .review-item { background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: 0 4px 0 var(--line); }
 .review-q { display: flex; gap: 14px; align-items: center; }
-.review-flag { width: 120px; flex-shrink: 0; border-radius: 4px; box-shadow: 0 1px 4px #0003; }
+.review-flag { --flag-h: 80px; }
 .prompt-sm { font-size: 20px; font-weight: 700; white-space: pre-wrap; margin: 0; }
 .review-answers { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
 .review-answers div { border-radius: 12px; padding: 6px 14px; display: flex; gap: 10px; align-items: center; font-size: 20px; }
@@ -280,7 +276,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .review-answers dd { margin: 0; font-weight: 800; }
 .review-answers .ok { background: #e3f8ee; color: #0d7a48; }
 .review-answers .ng { background: #fde8eb; color: #b0182c; }
-.mini-flag { width: 64px; border-radius: 3px; }
+.mini-flag { --flag-h: 40px; }
 .explanation { margin: 0; font-size: 18px; line-height: 1.7; white-space: pre-wrap; color: #33475e; }
 
 .tabs { display: flex; gap: 6px; }
@@ -335,7 +331,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 @media (orientation: landscape) and (min-width: 900px) {
   .question.fmt-written { display: grid; grid-template-columns: 1fr 1.5fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 24px; }
   .question.fmt-written .prompt { grid-column: 1; grid-row: 1; }
-  .question.fmt-written .q-flag { grid-column: 1; grid-row: 2; align-self: start; justify-self: center; height: min(30vh, 240px); }
+  .question.fmt-written .q-flag { grid-column: 1; grid-row: 2; align-self: start; justify-self: center; --flag-h: min(30vh, 240px); }
   .question.fmt-written .written-area { grid-column: 2; grid-row: 1 / span 2; margin: 0; align-self: end; }
   .question.fmt-written:not(:has(.q-flag)) .prompt { grid-row: 1 / span 2; }
 }
@@ -343,9 +339,9 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 /* たて向き：問題を画面のまん中あたりに置き、国旗を大きくする */
 @media (orientation: portrait) {
   .question.fmt-choice { justify-content: center; padding-bottom: 8vh; }
-  .flag-choices .choice .flag { height: min(17vh, 230px); }
-  .q-flag { height: min(26vh, 320px); }
-  .q-flag.small { height: min(24vh, 280px); }
+  .flag-choices .choice .flag { --flag-h: min(17vh, 230px); }
+  .q-flag { --flag-h: min(26vh, 320px); }
+  .q-flag.small { --flag-h: min(24vh, 280px); }
   .question.fmt-written .prompt { margin-top: 2vh; }
 }
 
@@ -365,4 +361,62 @@ input { -webkit-user-select: text; user-select: text; }
 /* iPadのキーボードは画面の下半分に出るので、答えの欄は問題のすぐ下に置く（横向きでも左右に分けない） */
 .question.fmt-written.input-native { display: flex; justify-content: flex-start; }
 .question.fmt-written.input-native .written-area { margin-top: 0; }
-.question.fmt-written.input-native .q-flag { height: min(22vh, 200px); align-self: center; }
+.question.fmt-written.input-native .q-flag { --flag-h: min(22vh, 200px); align-self: center; }
+
+/* ---- 国旗の拡大表示 ---- */
+.flag-zoom {
+  position: relative;
+  flex-shrink: 0;
+  padding: 4px;
+  border: none;
+  background: transparent;
+  cursor: zoom-in;
+  min-width: 44px;
+  min-height: 44px;
+}
+.zoom-mark {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  font-size: 16px;
+  background: #fff;
+  border-radius: 50%;
+  padding: 2px 4px;
+  box-shadow: 0 1px 3px #0004;
+}
+.viewer { position: fixed; inset: 0; z-index: 10; background: #0d1520ee; color: #fff; animation: fadein 0.15s; }
+@keyframes fadein { from { opacity: 0; } }
+.viewer-stage { position: absolute; inset: 0; overflow: hidden; touch-action: none; }
+.viewer-flag {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  filter: drop-shadow(0 4px 16px #0008);
+  touch-action: none;
+}
+.viewer-top {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  display: flex;
+  gap: 10px;
+}
+.viewer-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 20px;
+  pointer-events: none;
+  text-shadow: 0 1px 4px #000;
+}
+.viewer-info strong { font-size: 28px; }
+.viewer-hint { font-size: 15px; opacity: 0.75; }
+/* ボタンの幅は中身で決まるので、中の国旗は「枠の100%」ではなく縦横比どおりの幅にする */
+.flag-zoom .flag { width: calc(var(--flag-h) * var(--ar)); }
+.viewer .btn:not(.primary) { color: var(--ink); }
